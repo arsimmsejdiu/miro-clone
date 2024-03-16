@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/assets";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -24,7 +25,7 @@ export const OrgSidebar = () => {
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image
-            src="/logo.svg"
+            src={Logo}
             alt="Logo"
             height={60}
             width={60}

@@ -34,4 +34,4 @@ export default function RootLayout({
   );
 }
 
-// Dashboard layout 10:25
+// Navbar 1:14

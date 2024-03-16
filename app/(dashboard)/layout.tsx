@@ -13,17 +13,17 @@ export const metadata: Metadata = {
 const DashboardLayout = ({ children }: LayoutProps) => {
   return (
     <main className="h-full">
-    <Sidebar />
-    <div className="pl-[60px] h-full">
-      <div className="flex gap-x-3 h-full">
-        <OrgSidebar />
-        <div className="h-full flex-1">
-          <Navbar />
-          {children}
+      <Sidebar />
+      <div className="pl-[60px] h-full">
+        <div className="flex gap-x-3 h-full">
+          <OrgSidebar />
+          <div className="h-full flex-1">
+            <Navbar />
+            {children}
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+    </main>
   );
 };
 

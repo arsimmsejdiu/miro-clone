@@ -8,9 +8,6 @@ import {
 import { InviteButton } from "./invite-button";
 import { SearchInput } from "./search-input";
 
-// import { SearchInput } from "./search-input";
-// import { InviteButton } from "./invite-button";
-
 export const Navbar = () => {
   const { organization } = useOrganization();
 
