@@ -6,7 +6,7 @@ import { OrgSidebar } from "./_components/org-sidebar";
 import { Navbar } from "./_components/navbar";
 
 export const metadata: Metadata = {
-  title: "Boardy Dashboard",
+  title: "Penyard",
   description: "Create all content in the canva",
 };
 
