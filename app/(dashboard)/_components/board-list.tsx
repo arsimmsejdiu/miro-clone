@@ -5,6 +5,9 @@ import { useQuery } from "convex/react";
 import { BoardCard } from "./board-card";
 import { NewBoardButton } from "./new-board-button";
 import { EmptyOr } from "@/assets";
+import { EmptySearch } from "./empty-states/empty-search";
+import { EmptyFavorites } from "./empty-states/empty-favorites";
+import { EmptyBoards } from "./empty-states/empty-boards";
 
 export const BoardList = ({
     orgId,
@@ -14,9 +17,9 @@ export const BoardList = ({
     //   orgId,
     //   ...query,
     // });
-    const data = undefined;
+    const data: any = []; // TODO: Change to API call
   
-    if (data !== undefined) {
+    if (data === undefined) {
       return (
         <div>
           <h2 className="text-3xl">
@@ -33,17 +36,17 @@ export const BoardList = ({
       )
     }
   
-    // if (!data?.length && query.search) {
-    //   return <EmptySearch />;
-    // }
+    if (!data?.length && query.search) {
+      return <EmptySearch />;
+    }
   
-    // if (!data?.length && query.favorites) {
-    //   return <EmptyFavorites />
-    // }
+    if (!data?.length && query.favorites) {
+      return <EmptyFavorites />
+    }
   
-    // if (!data?.length) {
-    //   return <EmptyBoards />
-    // }
+    if (!data?.length) {
+      return <EmptyBoards />
+    }
   
     return (
       <div>
@@ -52,8 +55,7 @@ export const BoardList = ({
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-5 mt-8 pb-10">
           <NewBoardButton orgId={orgId} />
-          {/* {data?.map((board) => ( */}
-            {/*TODO: BoardCard goes here */}
+          {data?.map((board: any) => (
             <BoardCard
             key={1}
             id={"1"}
@@ -65,7 +67,7 @@ export const BoardList = ({
             orgId={"12"}
             isFavorite={true}
           />
-            {/* ))} */}
+          ))}
         </div>
       </div>
     );

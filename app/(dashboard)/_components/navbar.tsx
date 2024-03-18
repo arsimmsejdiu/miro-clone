@@ -40,9 +40,9 @@ export const Navbar = () => {
         }}
       />
       </div>
-      {/* {organization && ( */}
+      {organization && (
         <InviteButton />
-      {/* )} */}
+      )}
       <UserButton />
     </div>
   );
