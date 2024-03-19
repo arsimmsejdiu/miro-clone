@@ -2,9 +2,7 @@
 
 import { toast } from "sonner";
 import { Link2, Pencil, Trash2 } from "lucide-react";
-import { DropdownMenuContentProps } from "@radix-ui/react-dropdown-menu";
 
-// import { ConfirmModal } from "@/components/confirm-modal";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,17 +11,11 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { api } from "@/convex/_generated/api";
-// import { useApiMutation } from "@/hooks/use-api-mutation";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 import { Button } from "@/components/ui/button";
-// import { useRenameModal } from "@/store/use-rename-modal";
-
-interface ActionsProps {
-  children: React.ReactNode;
-  side?: DropdownMenuContentProps["side"];
-  sideOffset?: DropdownMenuContentProps["sideOffset"];
-  id: string;
-  title: string;
-};
+import { ConfirmModal } from "./confirm-modal";
+import { useRenameModal } from "@/store/use-rename-modal";
+import { ActionsProps } from "@/interfaces/modal-interface";
 
 export const Actions = ({
   children,
@@ -32,52 +24,46 @@ export const Actions = ({
   id,
   title,
 }: ActionsProps) => {
-//   const { onOpen } = useRenameModal();
-//   const { mutate, pending } = useApiMutation(api.board.remove);
+  const { onOpen } = useRenameModal();
+  const { mutate, pending } = useApiMutation(api.board.remove);
 
   const onCopyLink = () => {
-    navigator.clipboard.writeText(
-      `${window.location.origin}/board/${id}`,
-    )
+    navigator.clipboard
+      .writeText(`${window.location.origin}/board/${id}`)
       .then(() => toast.success("Link copied"))
-      .catch(() => toast.error("Failed to copy link"))
+      .catch(() => toast.error("Failed to copy link"));
   };
 
-//   const onDelete = () => {
-//     mutate({ id })
-//       .then(() => toast.success("Board deleted"))
-//       .catch(() => toast.error("Failed to delete board"));
-//   };
+  const onDelete = () => {
+    mutate({ id })
+      .then(() => toast.success("Board deleted"))
+      .catch(() => toast.error("Failed to delete board"));
+  };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        {children}
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent
         onClick={(e: any) => e.stopPropagation()}
         side={side}
         sideOffset={sideOffset}
         className="w-60"
       >
-        <DropdownMenuItem
-          onClick={onCopyLink}
-          className="p-3 cursor-pointer"
-        >
+        <DropdownMenuItem onClick={onCopyLink} className="p-3 cursor-pointer">
           <Link2 className="h-4 w-4 mr-2" />
           Copy board link
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {}}
+          onClick={() => onOpen(id, title)}
           className="p-3 cursor-pointer"
         >
           <Pencil className="h-4 w-4 mr-2" />
           Rename
         </DropdownMenuItem>
-        {/* <ConfirmModal
+        <ConfirmModal
           header="Delete board?"
           description="This will delete the board and all of its contents."
-          disabled={() => {}}
+          disabled={pending}
           onConfirm={onDelete}
         >
           <Button
@@ -87,7 +73,7 @@ export const Actions = ({
             <Trash2 className="h-4 w-4 mr-2" />
             Delete
           </Button>
-        </ConfirmModal> */}
+        </ConfirmModal>
       </DropdownMenuContent>
     </DropdownMenu>
   );

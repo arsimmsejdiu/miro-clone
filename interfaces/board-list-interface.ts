@@ -1,9 +1,22 @@
+import { Id } from "@/convex/_generated/dataModel";
+
 export interface BoardListProps {
   orgId: string;
   query: {
     search?: string;
     favorites?: string;
   };
+}
+
+export interface BoardProps {
+  isFavorite: boolean;
+  _id: Id<"boards">;
+  _creationTime: number;
+  orgId: string;
+  title: string;
+  authorId: string;
+  authorName: string;
+  imageUrl: string;
 }
 
 export interface BoardCardProps {

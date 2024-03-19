@@ -8,26 +8,26 @@ import { useOrganization } from "@clerk/nextjs";
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { EmptyNote } from "@/assets";
-// import { useApiMutation } from "@/hooks/use-api-mutation";
+import { useApiMutation } from "@/hooks/use-api-mutation";
 
 export const EmptyBoards = () => {
   const router = useRouter();
   const { organization } = useOrganization();
-  //const { mutate, pending } = useApiMutation(api.board.create);
+  const { mutate, pending } = useApiMutation(api.board.create);
 
-  // const onClick = () => {
-  //     if(!organization) return;
+  const onClick = () => {
+    if (!organization) return;
 
-  //     mutate({
-  //         orgId: organization.id,
-  //         title: "Untitled"
-  //       })
-  //         .then((id) => {
-  //           toast.success("Board created");
-  //           router.push(`/board/${id}`);
-  //         })
-  //         .catch(() => toast.error("Failed to create board"));
-  // }
+    mutate({
+      orgId: organization.id,
+      title: "Untitled",
+    })
+      .then((id) => {
+        toast.success("Board created");
+        router.push(`/board/${id}`);
+      })
+      .catch(() => toast.error("Failed to create board"));
+  };
 
   return (
     <div className="h-full flex flex-col items-center justify-center">
@@ -37,7 +37,7 @@ export const EmptyBoards = () => {
         Start by creating a board for your organization
       </p>
       <div className="mt-6">
-        <Button disabled={false} onClick={() => {}} size="lg">
+        <Button disabled={pending} onClick={onClick} size="lg">
           Create board
         </Button>
       </div>
