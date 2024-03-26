@@ -1,12 +1,11 @@
 import { BoardIdPageProps } from "@/interfaces/board-id-interface";
+import { Canvas } from "./_components/canvas";
 
 const BoardIdPage = ({
     params,
   }: BoardIdPageProps) => {
     return (
-        <div>
-            Board details page
-        </div>
+        <Canvas boardId={params.boardId}/>
     )
   }
 
