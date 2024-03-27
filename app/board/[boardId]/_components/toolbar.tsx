@@ -25,31 +25,31 @@ export const Toolbar = () => {
           label="Text"
           icon={Type}
           onClick={() => {}}
-          isActive={true}
+          isActive={false}
         />
         <ToolButton
           label="Sticky note"
           icon={StickyNote}
           onClick={() => {}}
-          isActive={true}
+          isActive={false}
         />
         <ToolButton
           label="Rectangle"
           icon={Square}
           onClick={() => {}}
-          isActive={true}
+          isActive={false}
         />
         <ToolButton
           label="Ellipse"
           icon={Circle}
           onClick={() => {}}
-          isActive={true}
+          isActive={false}
         />
         <ToolButton
           label="Pen"
           icon={Pencil}
           onClick={() => {}}
-          isActive={true}
+          isActive={false}
         />
       </div>
       <div className="bg-white rounded-md p-1.5 flex flex-col items-center shadow-md">
