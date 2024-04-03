@@ -1,10 +1,23 @@
-import { CanvasState } from "@/types/canvas.types";
+import { CanvasState, NoteLayer } from "@/types/canvas.types";
 import { LucideIcon } from "lucide-react";
 
 export interface BoardIdPageProps {
   params: {
     boardId: string;
   };
+}
+
+export interface CursorProps {
+  connectionId: number;
+}
+
+export interface PathProps {
+  x: number;
+  y: number;
+  points: number[][];
+  fill: string;
+  onPointerDown?: (e: React.PointerEvent) => void;
+  stroke?: string;
 }
 
 export interface InfoProps {
@@ -22,7 +35,7 @@ export interface ToolbarProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-};
+}
 
 export interface ToolButtonProps {
   label: string;
@@ -37,4 +50,17 @@ export interface UserAvatarProps {
   name?: string;
   fallback?: string;
   borderColor?: string;
-};
+}
+
+export interface LayerPreviewProps {
+  id: string;
+  onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void;
+  selectionColor?: string;
+}
+
+export interface NoteProps {
+  id: string;
+  layer: NoteLayer;
+  onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
+}

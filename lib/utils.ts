@@ -13,14 +13,33 @@ import {
   XYWH,
 } from "@/types/canvas.types";
 
+/**
+ * Combines multiple class values into a single string using the 'clsx' and 'twMerge' functions.
+ *
+ * @param inputs - The class values to combine.
+ * @returns A string representing the combined class values.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Returns the color associated with a given connection ID.
+ * 
+ * @param connectionId - The connection ID.
+ * @returns The color associated with the connection ID.
+ */
 export function connectionIdToColor(connectionId: number): string {
   return COLORS[connectionId % COLORS.length];
 }
 
+/**
+ * Converts a pointer event to a canvas point relative to the camera position.
+ *
+ * @param e - The pointer event object.
+ * @param camera - The camera object containing the x and y coordinates.
+ * @returns An object with the x and y coordinates of the canvas point.
+ */
 export function pointerEventToCanvasPoint(
   e: React.PointerEvent,
   camera: Camera
@@ -31,12 +50,26 @@ export function pointerEventToCanvasPoint(
   };
 }
 
+/**
+ * Converts a Color object to a CSS color string.
+ *
+ * @param color - The Color object to convert.
+ * @returns The CSS color string representation of the Color object.
+ */
 export function colorToCss(color: Color) {
   return `#${color.r.toString(16).padStart(2, "0")}${color.g
     .toString(16)
     .padStart(2, "0")}${color.b.toString(16).padStart(2, "0")}`;
 }
 
+/**
+ * Resizes the bounds of a rectangle based on a corner and a point.
+ * 
+ * @param bounds - The original bounds of the rectangle.
+ * @param corner - The corner of the rectangle to resize.
+ * @param point - The point to resize the rectangle to.
+ * @returns The resized bounds of the rectangle.
+ */
 export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
   const result = {
     x: bounds.x,
@@ -68,6 +101,15 @@ export function resizeBounds(bounds: XYWH, corner: Side, point: Point): XYWH {
   return result;
 }
 
+/**
+ * Finds the intersecting layers with a given rectangle.
+ *
+ * @param {readonly string[]} layerIds - The array of layer IDs to check for intersection.
+ * @param {ReadonlyMap<string, Layer>} layers - The map of layers.
+ * @param {Point} a - The first point of the rectangle.
+ * @param {Point} b - The second point of the rectangle.
+ * @returns {string[]} - The array of layer IDs that intersect with the rectangle.
+ */
 export function findIntersectingLayersWithRectangle(
   layerIds: readonly string[],
   layers: ReadonlyMap<string, Layer>,
@@ -105,12 +147,26 @@ export function findIntersectingLayersWithRectangle(
   return ids;
 }
 
+/**
+ * Calculates the contrasting text color based on the given color.
+ * 
+ * @param color - The color object with RGB values.
+ * @returns The contrasting text color, either "black" or "white".
+ */
 export function getContrastingTextColor(color: Color) {
   const luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
 
   return luminance > 182 ? "black" : "white";
 }
 
+/**
+ * Converts an array of pen points to a PathLayer object.
+ * 
+ * @param points - The array of pen points to be converted.
+ * @param color - The color to be used for the fill of the PathLayer.
+ * @returns The converted PathLayer object.
+ * @throws Error if the number of points is less than 2.
+ */
 export function penPointsToPathLayer(
   points: number[][],
   color: Color
@@ -155,6 +211,12 @@ export function penPointsToPathLayer(
   };
 }
 
+/**
+ * Generates an SVG path string from a stroke array.
+ *
+ * @param stroke - The stroke array containing the coordinates of the stroke points.
+ * @returns The SVG path string representing the stroke.
+ */
 export function getSvgPathFromStroke(stroke: number[][]) {
   if (!stroke.length) return "";
 
