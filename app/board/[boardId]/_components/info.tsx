@@ -7,7 +7,6 @@ import { useQuery } from "convex/react";
 import { Poppins } from "next/font/google";
 
 import { InfoProps } from "@/interfaces/board-id-interface";
-import { useRenameModal } from "@/store/use-rename-modal";
 import { Hint } from "@/components/hint";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/assets";
@@ -16,6 +15,7 @@ import { TabSeparator } from "./tab-separator";
 import { Actions } from "@/components/actions";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { useRenameModal } from "@/store/use-rename-modal";
 
 const font = Poppins({
   subsets: ["latin"],

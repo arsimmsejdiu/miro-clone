@@ -10,16 +10,27 @@ import {
 } from "lucide-react";
 
 import { ToolButton } from "./toolbar-button";
+import { ToolbarProps } from "@/interfaces/board-id-interface";
+import { CanvasMode } from "@/types/canvas.types";
 
-export const Toolbar = () => {
+export const Toolbar = ({
+  canvasState,
+  setCanvasState,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
+}: ToolbarProps) => {
   return (
     <div className="absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4">
       <div className="bg-white rounded-md p-1.5 flex gap-y-1 flex-col items-center shadow-md">
         <ToolButton
           label="Select"
           icon={MousePointer2}
-          onClick={() => {}}
-          isActive={true}
+          onClick={() => setCanvasState({
+            mode: CanvasMode.None
+          })}
+          isActive={false}
         />
         <ToolButton
           label="Text"
@@ -57,13 +68,13 @@ export const Toolbar = () => {
           label="Undo"
           icon={Undo2}
           onClick={() => {}}
-          isDisabled={false}
+          isDisabled={true}
         />
         <ToolButton
           label="Redo"
           icon={Redo2}
           onClick={() => {}}
-          isDisabled={false}
+          isDisabled={true}
         />
       </div>
     </div>

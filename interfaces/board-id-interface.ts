@@ -1,3 +1,4 @@
+import { CanvasState } from "@/types/canvas.types";
 import { LucideIcon } from "lucide-react";
 
 export interface BoardIdPageProps {
@@ -13,6 +14,15 @@ export interface InfoProps {
 export interface CanvasProps {
   boardId: string;
 }
+
+export interface ToolbarProps {
+  canvasState: CanvasState;
+  setCanvasState: (newState: CanvasState) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
+};
 
 export interface ToolButtonProps {
   label: string;
