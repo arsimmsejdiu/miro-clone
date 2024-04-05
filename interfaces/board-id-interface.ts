@@ -1,4 +1,10 @@
-import { CanvasState, NoteLayer } from "@/types/canvas.types";
+import {
+  CanvasState,
+  EllipseLayer,
+  NoteLayer,
+  RectangleLayer,
+  TextLayer,
+} from "@/types/canvas.types";
 import { LucideIcon } from "lucide-react";
 
 export interface BoardIdPageProps {
@@ -61,6 +67,27 @@ export interface LayerPreviewProps {
 export interface NoteProps {
   id: string;
   layer: NoteLayer;
+  onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
+}
+
+export interface TextProps {
+  id: string;
+  layer: TextLayer;
+  onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
+}
+
+export interface EllipseProps {
+  id: string;
+  layer: EllipseLayer;
+  onPointerDown: (e: React.PointerEvent, id: string) => void;
+  selectionColor?: string;
+}
+
+export interface RectangleProps {
+  id: string;
+  layer: RectangleLayer;
   onPointerDown: (e: React.PointerEvent, id: string) => void;
   selectionColor?: string;
 }

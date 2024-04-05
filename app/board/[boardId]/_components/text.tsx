@@ -1,32 +1,25 @@
 import { Kalam } from "next/font/google";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
-
-import {
-  cn,
-  colorToCss,
-  getContrastingTextColor,
-  calculateFontSize,
-} from "@/lib/utils";
 import { useMutation } from "@/liveblocks.config";
 
-import { NoteProps } from "@/interfaces/board-id-interface";
+import { TextProps } from "@/interfaces/board-id-interface";
+import { cn, colorToCss, calculateFontSize } from "@/lib/utils";
 
 const font = Kalam({
   subsets: ["latin"],
   weight: ["400"],
 });
 
-export const Note = ({
+export const Text = ({
   layer,
   onPointerDown,
   id,
   selectionColor,
-}: NoteProps) => {
-  const { x, y, width, height, fill, value } = layer;
+}: TextProps) => {
+  const { x, y, height, width, fill, value } = layer;
 
   const updateValue = useMutation(({ storage }, newValue: string) => {
     const liveLayers = storage.get("layers");
-
     liveLayers.get(id)?.set("value", newValue);
   }, []);
 
@@ -43,20 +36,18 @@ export const Note = ({
       onPointerDown={(e) => onPointerDown(e, id)}
       style={{
         outline: selectionColor ? `1px solid ${selectionColor}` : "none",
-        backgroundColor: fill ? colorToCss(fill) : "#000",
       }}
-      className="shadow-md drop-shadow-xl"
     >
       <ContentEditable
-        html={value || "Text"}
+        html={value || ""}
         onChange={handleContentChange}
         className={cn(
-          "h-full w-full flex items-center justify-center text-center outline-none",
+          "h-full w-full flex items-center justify-center text-center drop-shadow-md outline-none",
           font.className
         )}
         style={{
           fontSize: calculateFontSize(width, height),
-          color: fill ? getContrastingTextColor(fill) : "#000",
+          color: fill ? colorToCss(fill) : "#000",
         }}
       />
     </foreignObject>

@@ -24,10 +24,8 @@ import {
   resizeBounds,
 } from "@/lib/utils";
 
-import { Info } from "./info";
-import { Participants } from "./participants";
+
 import { CanvasProps } from "@/interfaces/board-id-interface";
-import { Toolbar } from "./toolbar";
 import {
   Camera,
   CanvasMode,
@@ -36,8 +34,12 @@ import {
   LayerType,
   Point,
 } from "@/types/canvas.types";
+
 import { CursorsPresence } from "./cursors-presence";
 import { LayerPreview } from "./layer-preview";
+import { Toolbar } from "./toolbar";
+import { Info } from "./info";
+import { Participants } from "./participants";
 
 export const Canvas = ({ boardId }: CanvasProps) => {
   const layerIds = useStorage((root) => root.layerIds);
@@ -172,7 +174,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             key={layerId}
             id={layerId}
             onLayerPointerDown={() => {}} // TODO: create onLayerPointerDown function
-            selectionColor={""} // TODO: create function with layerId as a parameter layerIdsToColorSelection[layerId]
+            selectionColor={"#000"} // TODO: create function with layerId as a parameter layerIdsToColorSelection[layerId]
             />
           ))}
           <CursorsPresence />

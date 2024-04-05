@@ -232,3 +232,23 @@ export function getSvgPathFromStroke(stroke: number[][]) {
   d.push("Z");
   return d.join(" ");
 }
+
+/**
+ * Calculates the font size based on the width and height of a canvas.
+ * 
+ * @param {number} width - The width of the canvas.
+ * @param {number} height - The height of the canvas.
+ * @returns {number} - The calculated font size.
+ */
+export const calculateFontSize = (width: number, height: number) => {
+  const maxFontSize = 96;
+  const scaleFactor = 0.5;
+  const fontSizeBasedOnHeight = height * scaleFactor;
+  const fontSizeBasedOnWidth = width * scaleFactor;
+
+  return Math.min(
+    fontSizeBasedOnHeight,
+    fontSizeBasedOnWidth,
+    maxFontSize
+  )
+}
