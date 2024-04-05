@@ -24,7 +24,6 @@ import {
   resizeBounds,
 } from "@/lib/utils";
 
-
 import { CanvasProps } from "@/interfaces/board-id-interface";
 import {
   Camera,
@@ -40,6 +39,7 @@ import { LayerPreview } from "./layer-preview";
 import { Toolbar } from "./toolbar";
 import { Info } from "./info";
 import { Participants } from "./participants";
+import { useDeleteLayers } from "@/hooks/use-delete-layers";
 
 export const Canvas = ({ boardId }: CanvasProps) => {
   const layerIds = useStorage((root) => root.layerIds);
@@ -144,6 +144,47 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     [setCanvasState, camera, canvasState, history, insertLayer]
   );
 
+  const onLayerPointerDown = useMutation(
+    ({ self, setMyPresence }, e: React.PointerEvent, layerId: string) => {
+      if (
+        canvasState.mode === CanvasMode.Pencil ||
+        canvasState.mode === CanvasMode.Inserting
+      ) {
+        return;
+      }
+
+      history.pause();
+      e.stopPropagation();
+
+      const point = pointerEventToCanvasPoint(e, camera);
+      if (!self.presence.selection.includes(layerId)) {
+        setMyPresence({ selection: [layerId] }, { addToHistory: true });
+      }
+
+      setCanvasState({ mode: CanvasMode.Translating, current: point });
+    },
+    [setCanvasState, camera, history, canvasState.mode]
+  );
+
+  const selection = useOthersMapped((other) => other.presence.selection);
+
+  const layerIdsToColorSelection = useMemo(() => {
+    // * The object has a type Record<string, string>, which means it is a key-value pair where both the keys and values are strings.
+    const layerIdsToColorSelection: Record<string, string> = {};
+
+    for (const user of selection) {
+      const [connectionId, selection] = user;
+
+      for (const layerId of selection) {
+        layerIdsToColorSelection[layerId] = connectionIdToColor(connectionId);
+      }
+    }
+
+    return layerIdsToColorSelection;
+  }, [selection]);
+
+  const deleteLayers = useDeleteLayers(); //
+
   return (
     <main className="h-full w-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
@@ -170,11 +211,11 @@ export const Canvas = ({ boardId }: CanvasProps) => {
           }}
         >
           {layerIds.map((layerId) => (
-            <LayerPreview 
-            key={layerId}
-            id={layerId}
-            onLayerPointerDown={() => {}} // TODO: create onLayerPointerDown function
-            selectionColor={"#000"} // TODO: create function with layerId as a parameter layerIdsToColorSelection[layerId]
+            <LayerPreview
+              key={layerId}
+              id={layerId}
+              onLayerPointerDown={onLayerPointerDown}
+              selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
           <CursorsPresence />
