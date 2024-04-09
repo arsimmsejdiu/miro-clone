@@ -32,6 +32,8 @@ import {
   Color,
   LayerType,
   Point,
+  Side,
+  XYWH,
 } from "@/types/canvas.types";
 
 import { CursorsPresence } from "./cursors-presence";
@@ -40,6 +42,7 @@ import { Toolbar } from "./toolbar";
 import { Info } from "./info";
 import { Participants } from "./participants";
 import { useDeleteLayers } from "@/hooks/use-delete-layers";
+import { SelectionBox } from "./selection-box";
 
 export const Canvas = ({ boardId }: CanvasProps) => {
   const layerIds = useStorage((root) => root.layerIds);
@@ -100,14 +103,177 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     }));
   }, []);
 
+  const resizeSelectedLayer = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Resizing) {
+        return;
+      }
+
+      const bounds = resizeBounds(
+        canvasState.initialBounds,
+        canvasState.corner,
+        point
+      );
+
+      const liveLayers = storage.get("layers");
+      const layer = liveLayers.get(self.presence.selection[0]);
+
+      if (layer) {
+        layer.update(bounds);
+      }
+    },
+    [canvasState]
+  );
+
+  const translateSelectedLayers = useMutation(
+    ({ storage, self }, point: Point) => {
+      if (canvasState.mode !== CanvasMode.Translating) {
+        return;
+      }
+
+      const offSet = {
+        x: point.x - canvasState.current.x,
+        y: point.y - canvasState.current.y,
+      };
+
+      const liveLayers = storage.get("layers");
+
+      for (const id of self.presence.selection) {
+        const layer = liveLayers.get(id);
+
+        if (layer) {
+          layer.update({
+            x: layer.get("x") + offSet.x,
+            y: layer.get("y") + offSet.y,
+          });
+        }
+      }
+
+      setCanvasState({ mode: CanvasMode.Translating, current: point });
+    },
+    [canvasState]
+  );
+
+  const updateSelectionNet = useMutation(
+    ({ storage, setMyPresence }, current: Point, origin: Point) => {
+      const layers = storage.get("layers").toImmutable();
+
+      setCanvasState({
+        mode: CanvasMode.SelectionNet,
+        origin,
+        current,
+      });
+
+      const ids = findIntersectingLayersWithRectangle(
+        layerIds,
+        layers,
+        origin,
+        current
+      );
+
+      setMyPresence({ selection: ids });
+    },
+    [layerIds]
+  );
+
+  const startMultiSelection = useCallback((current: Point, origin: Point) => {
+    if (Math.abs(current.x - origin.x) + Math.abs(current.y - origin.y) > 5) {
+      setCanvasState({
+        mode: CanvasMode.SelectionNet,
+        origin,
+        current,
+      });
+    }
+  }, []);
+
+  const continueDrawing = useMutation(
+    ({ self, setMyPresence }, point: Point, e: React.PointerEvent) => {
+      const { pencilDraft } = self.presence;
+
+      if (
+        canvasState.mode !== CanvasMode.Pencil ||
+        e.button !== 1 ||
+        pencilDraft == null
+      ) {
+        return;
+      }
+
+      setMyPresence({
+        cursor: point,
+        pencilDraft:
+          pencilDraft.length === 1 &&
+          pencilDraft[0][0] === point.x &&
+          pencilDraft[0][1] === point.y
+            ? pencilDraft
+            : [...pencilDraft, [point.x, point.y, e.pressure]],
+      });
+    },
+    [canvasState.mode]
+  );
+
+  const unselectLayers = useMutation(({ self, setMyPresence }) => {
+    if (self.presence.selection.length > 0) {
+      setMyPresence({ selection: [] }, { addToHistory: true });
+    }
+  }, []);
+
+  const insertPath = useMutation(
+    ({ storage, self, setMyPresence }) => {
+      const liveLayers = storage.get("layers");
+      const { pencilDraft } = self.presence;
+
+      if (
+        pencilDraft == null ||
+        pencilDraft.length < 2 ||
+        liveLayers.size >= MAX_LAYERS
+      ) {
+        setMyPresence({ pencilDraft: null });
+        return;
+      }
+
+      const id = nanoid();
+      liveLayers.set(
+        id,
+        new LiveObject(penPointsToPathLayer(pencilDraft, lastUsedColor))
+      );
+
+      const liveLayerIds = storage.get("layerIds");
+      liveLayerIds.push(id);
+
+      setMyPresence({ pencilDraft: null });
+      setCanvasState({ mode: CanvasMode.Pencil });
+    },
+    [lastUsedColor]
+  );
+
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
       e.preventDefault();
       const current = pointerEventToCanvasPoint(e, camera);
 
+      if (canvasState.mode === CanvasMode.Pressing) {
+        startMultiSelection(current, canvasState.origin);
+      } else if (canvasState.mode === CanvasMode.SelectionNet) {
+        updateSelectionNet(current, canvasState.origin);
+      } else if (canvasState.mode === CanvasMode.Translating) {
+        translateSelectedLayers(current);
+      } else if (canvasState.mode === CanvasMode.Resizing) {
+        resizeSelectedLayer(current);
+      } else if (canvasState.mode === CanvasMode.Pencil) {
+        continueDrawing(current, e);
+      }
+
       setMyPresence({ cursor: current });
     },
-    [camera, canvasState]
+    [
+      continueDrawing,
+      camera,
+      canvasState,
+      resizeSelectedLayer,
+      translateSelectedLayers,
+      startMultiSelection,
+      updateSelectionNet,
+    ]
   );
 
   const onPointerLeave = useMutation(({ setMyPresence }) => {
@@ -131,7 +297,17 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     ({}, e) => {
       const point = pointerEventToCanvasPoint(e, camera);
 
-      if (canvasState.mode === CanvasMode.Inserting) {
+      if (
+        canvasState.mode === CanvasMode.None ||
+        canvasState.mode === CanvasMode.Pressing
+      ) {
+        unselectLayers();
+        setCanvasState({
+          mode: CanvasMode.None,
+        });
+      } else if (canvasState.mode === CanvasMode.Pencil) {
+        insertPath();
+      } else if (canvasState.mode === CanvasMode.Inserting) {
         insertLayer(canvasState.layerType, point);
       } else {
         setCanvasState({
@@ -185,6 +361,18 @@ export const Canvas = ({ boardId }: CanvasProps) => {
 
   const deleteLayers = useDeleteLayers(); //
 
+  const onResizeHandlePointerDown = useCallback(
+    (corner: Side, initialBounds: XYWH) => {
+      history.pause();
+      setCanvasState({
+        mode: CanvasMode.Resizing,
+        initialBounds,
+        corner,
+      });
+    },
+    [history]
+  );
+
   return (
     <main className="h-full w-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
@@ -218,6 +406,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
               selectionColor={layerIdsToColorSelection[layerId]}
             />
           ))}
+          <SelectionBox onResizeHandlePointerDown={onResizeHandlePointerDown} />
           <CursorsPresence />
         </g>
       </svg>

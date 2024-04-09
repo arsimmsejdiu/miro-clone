@@ -3,7 +3,9 @@ import {
   EllipseLayer,
   NoteLayer,
   RectangleLayer,
+  Side,
   TextLayer,
+  XYWH,
 } from "@/types/canvas.types";
 import { LucideIcon } from "lucide-react";
 
@@ -91,3 +93,7 @@ export interface RectangleProps {
   onPointerDown: (e: React.PointerEvent, id: string) => void;
   selectionColor?: string;
 }
+
+export interface SelectionBoxProps {
+  onResizeHandlePointerDown: (corner: Side, initialBounds: XYWH) => void;
+};
