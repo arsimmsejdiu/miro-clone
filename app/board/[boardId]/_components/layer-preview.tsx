@@ -74,8 +74,6 @@ export const LayerPreview = memo(
         console.warn("Unknown layer type");
         return null;
     }
-
-    return <div>Layer Preview</div>;
   }
 );
 

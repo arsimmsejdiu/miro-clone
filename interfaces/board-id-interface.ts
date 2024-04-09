@@ -1,5 +1,7 @@
 import {
+  Camera,
   CanvasState,
+  Color,
   EllipseLayer,
   NoteLayer,
   RectangleLayer,
@@ -96,4 +98,18 @@ export interface RectangleProps {
 
 export interface SelectionBoxProps {
   onResizeHandlePointerDown: (corner: Side, initialBounds: XYWH) => void;
-};
+}
+
+export interface ColorPickerProps {
+  onChange: (color: Color) => void;
+}
+
+export interface ColorButtonProps {
+  onClick: (color: Color) => void;
+  color: Color;
+}
+
+export interface SelectionToolsProps {
+  camera: Camera;
+  setLastUsedColor: (color: Color) => void;
+}
