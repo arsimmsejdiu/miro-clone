@@ -33,5 +33,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-// Pencil & hooks 32:54
